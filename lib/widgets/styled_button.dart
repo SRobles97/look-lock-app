@@ -36,7 +36,7 @@ class StyledButton extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.displaySmall!.copyWith(
+        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
               color: textColor,
               fontFamily: GoogleFonts.firaSansCondensed().fontFamily,
             ),

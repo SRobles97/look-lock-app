@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:look_lock_app/views/welcome_page.dart';
+import 'package:look_lock_app/views/welcome_screen.dart';
 import 'package:look_lock_app/widgets/look_lock_logo.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => const WelcomePage(),
+        builder: (context) => const WelcomeScreen(),
       ),
       (route) => false,
     );

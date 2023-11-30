@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+
+import 'package:look_lock_app/views/login_screen.dart';
+import 'package:look_lock_app/views/register_screen.dart';
 import 'package:look_lock_app/widgets/look_lock_logo.dart';
 import 'package:look_lock_app/widgets/page_with_image_background.dart';
 import 'package:look_lock_app/widgets/styled_button.dart';
 
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({Key? key}) : super(key: key);
-
-  void _login() {}
-
-  void _register() {}
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    void login() {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ));
+    }
+
+    void register() {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RegisterScreen(),
+          ));
+    }
+
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: PageWithImageBackground(
@@ -30,13 +45,13 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(
                 height: 100,
               ),
-              StyledButton(text: 'Iniciar sesión', onPressed: _login),
+              StyledButton(text: 'Iniciar sesión', onPressed: login),
               const SizedBox(
                 height: 10,
               ),
               StyledButton(
                   text: 'Crear cuenta',
-                  onPressed: _register,
+                  onPressed: register,
                   color: Theme.of(context).colorScheme.secondary),
             ],
           ),
