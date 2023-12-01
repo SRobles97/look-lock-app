@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:look_lock_app/services/storage_services.dart';
 
@@ -64,7 +65,30 @@ class _ImageSelectorState extends State<ImageSelector> {
       final XFile? selectedImage = await picker.pickImage(source: source);
 
       if (selectedImage != null) {
-        final File imageFile = File(selectedImage.path);
+        File imageFile = File(selectedImage.path);
+
+        // Cargar la imagen
+        img.Image? originalImage = img.decodeImage(imageFile.readAsBytesSync());
+
+        if (originalImage != null) {
+          // Comprimir la imagen manteniendo las dimensiones originales
+          List<int> compressedImageBytes = img.encodeJpg(originalImage,
+              quality: 50); // Ajusta la calidad según sea necesario
+
+          // Crear un archivo temporal para la imagen procesada
+          final Directory tempDir = Directory.systemTemp;
+          final targetPath = '${tempDir.path}/temp.jpg';
+          imageFile = File(targetPath)..writeAsBytesSync(compressedImageBytes);
+
+          // Verificar el tamaño del archivo
+          if (imageFile.lengthSync() > 1048576) {
+            // Manejar error si el archivo todavía es demasiado grande
+            if (kDebugMode) {
+              print('El archivo es demasiado grande después de la compresión');
+            }
+            return;
+          }
+        }
 
         final String? imageUrl =
             await StorageServices.uploadImageToGitHub(imageFile);
@@ -87,7 +111,7 @@ class _ImageSelectorState extends State<ImageSelector> {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error al cargar la imagen: $e');
+        print('Error al seleccionar la imagen: $e');
       }
     }
   }
