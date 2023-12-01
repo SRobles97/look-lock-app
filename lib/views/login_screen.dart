@@ -1,10 +1,7 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:look_lock_app/services/storage_services.dart';
+
 import 'package:look_lock_app/widgets/custom_appbar.dart';
+import 'package:look_lock_app/widgets/image_selector.dart';
 import 'package:look_lock_app/widgets/page_title.dart';
 import 'package:look_lock_app/widgets/styled_button.dart';
 
@@ -16,86 +13,27 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  File? _image;
-  String? _imagePath;
+  String _imagePath = '';
   bool showImageMessage = false;
 
-  Future<void> _showSelectionDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-              title: Text("¿De dónde quieres tomar la imagen?",
-                  style: Theme.of(context).textTheme.bodyLarge),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    GestureDetector(
-                        child: Text("Galería",
-                            style: Theme.of(context).textTheme.bodyMedium),
-                        onTap: () {
-                          _pickImage(ImageSource.gallery);
-                          Navigator.pop(context);
-                        }),
-                    const Padding(padding: EdgeInsets.all(8.0)),
-                    GestureDetector(
-                        child: Text("Cámara",
-                            style: Theme.of(context).textTheme.bodyMedium),
-                        onTap: () {
-                          _pickImage(ImageSource.camera);
-                          Navigator.pop(context); // Cierra el diálogo
-                        })
-                  ],
-                ),
-              ));
-        });
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-
-    try {
-      final XFile? selectedImage = await picker.pickImage(source: source);
-
-      if (selectedImage != null) {
-        final File imageFile = File(selectedImage.path);
-
-        final String? imageUrl =
-            await StorageServices.uploadImageToGitHub(imageFile);
-
-        if (imageUrl != null) {
-          if (kDebugMode) {
-            print('Imagen cargada con éxito: $imageUrl');
-          }
-          setState(() {
-            _image = imageFile;
-            _imagePath = imageUrl;
-          });
-        } else {
-          if (kDebugMode) {
-            print('Error al cargar la imagen.');
-          }
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error al cargar la imagen: $e');
-      }
-    }
-  }
-
   bool _validateImage() {
-    if (_imagePath != null) {
-      setState(() {
-        showImageMessage = false;
-      });
-      return true;
-    } else {
+    if (_imagePath.isEmpty) {
       setState(() {
         showImageMessage = true;
       });
       return false;
+    } else {
+      setState(() {
+        showImageMessage = false;
+      });
+      return true;
     }
+  }
+
+  void _onImageSelected(String imagePath) {
+    setState(() {
+      _imagePath = imagePath;
+    });
   }
 
   void _handleSubmit() {
@@ -125,31 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      _showSelectionDialog(context);
-                    },
-                    child: Container(
-                      height: 250,
-                      width: 250,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: _imagePath != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.file(
-                                _image!,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Icon(
-                              Icons.camera_alt,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: 50,
-                            ),
-                    ),
+                  ImageSelector(
+                    imagePath: _imagePath,
+                    onTap: _onImageSelected,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),

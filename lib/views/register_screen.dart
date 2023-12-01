@@ -50,6 +50,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: Column(
         children: <Widget>[
+          const SizedBox(
+            height: 30,
+          ),
           const PageTitle(
               title: 'CREACIÓN DE CUENTAS',
               subtitle: 'Ingrese sus datos para crear una cuenta nueva.',
