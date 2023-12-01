@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:look_lock_app/services/auth_services.dart';
+import 'package:look_lock_app/services/storage_services.dart';
+import 'package:look_lock_app/views/logged/home_screen.dart';
 
 import 'package:look_lock_app/widgets/custom_appbar.dart';
 import 'package:look_lock_app/widgets/image_selector.dart';
+import 'package:look_lock_app/widgets/loading_screen.dart';
 import 'package:look_lock_app/widgets/page_title.dart';
 import 'package:look_lock_app/widgets/styled_button.dart';
 
@@ -36,9 +40,42 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     if (_validateImage()) {
-      // TODO: Conectar con el servicio de reconocimiento facial
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const LoadingScreen(
+            title: "Procesando...",
+            description: "Espere mientras procesamos su información.",
+          );
+        },
+      );
+
+      String loginMessage = await AuthServices().signInWithPhoto(_imagePath);
+
+      if (!mounted) return;
+
+      if (loginMessage == 'Inicio de sesión exitoso') {
+        Navigator.pop(context);
+
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomeScreen(),
+            ),
+            (route) => false);
+      } else {
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(loginMessage),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageServices {
   static Future<String?> uploadImageToGitHub(File imageFile) async {
@@ -47,5 +48,20 @@ class StorageServices {
     final randomNumber = random.nextInt(999999);
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     return '$prefix$randomNumber$timestamp.$extension';
+  }
+
+  static Future<void> setToken(String accessToken) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', accessToken);
+  }
+
+  static Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  static Future<void> clearToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
   }
 }

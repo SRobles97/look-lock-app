@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:look_lock_app/services/storage_services.dart';
+import 'package:look_lock_app/views/logged/home_screen.dart';
 import 'package:look_lock_app/views/welcome_screen.dart';
 import 'package:look_lock_app/widgets/look_lock_logo.dart';
 
@@ -15,11 +17,17 @@ class _SplashScreenState extends State<SplashScreen>
   AnimationController? _controller;
   Animation<double>? _animation;
   bool _showShadow = false;
+  String? token;
 
   @override
   void initState() {
     super.initState();
     _initializeSplashScreen();
+    _initializeToken();
+  }
+
+  void _initializeToken() async {
+    token = await StorageServices.getToken();
   }
 
   Future<void> _initializeSplashScreen() async {
@@ -43,13 +51,21 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _performPostAnimationActions() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const WelcomeScreen(),
-      ),
-      (route) => false,
-    );
+    if (token != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WelcomeScreen(),
+        ),
+      );
+    }
   }
 
   @override
