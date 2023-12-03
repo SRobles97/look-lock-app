@@ -10,7 +10,7 @@ class AuthServices {
 
   Future<String> signUp(
       String email, String username, String password, String imageUrl) async {
-    final url = Uri.https(ipAddress, dotenv.env['REGISTER_URL']!);
+    final url = Uri.http(ipAddress, dotenv.env['REGISTER_URL']!);
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -34,7 +34,7 @@ class AuthServices {
   }
 
   Future<String> signInWithPhoto(String imageUrl) async {
-    final url = Uri.https(ipAddress, dotenv.env['LOGIN_WITH_IMAGE_URL']!);
+    final url = Uri.http(ipAddress, dotenv.env['LOGIN_WITH_IMAGE_URL']!);
 
     final response = await http.post(
       url,

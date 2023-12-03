@@ -8,7 +8,7 @@ import 'package:look_lock_app/services/storage_services.dart';
 
 class ImageSelector extends StatefulWidget {
   final String imagePath;
-  final Function onTap;
+  final Function(String) onTap;
 
   const ImageSelector({Key? key, required this.imagePath, required this.onTap})
       : super(key: key);
@@ -18,14 +18,7 @@ class ImageSelector extends StatefulWidget {
 }
 
 class _ImageSelectorState extends State<ImageSelector> {
-  String _imagePath = '';
   File? _image;
-
-  @override
-  void initState() {
-    super.initState();
-    _imagePath = widget.imagePath;
-  }
 
   Future<void> _showSelectionDialog(BuildContext context) {
     return showDialog(
@@ -58,61 +51,54 @@ class _ImageSelectorState extends State<ImageSelector> {
         });
   }
 
+  Future<File?> _compressImage(File imageFile) async {
+    try {
+      img.Image? originalImage = img.decodeImage(imageFile.readAsBytesSync());
+      if (originalImage == null) return null;
+      List<int> compressedImageBytes =
+          img.encodeJpg(originalImage, quality: 50);
+
+      final Directory tempDir = Directory.systemTemp;
+      final String uniqueFileName =
+          'temp_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final String targetPath = '${tempDir.path}/$uniqueFileName';
+
+      File tempImageFile = File(targetPath)
+        ..writeAsBytesSync(compressedImageBytes);
+
+      if (tempImageFile.lengthSync() > 1048576) {
+        return null;
+      }
+
+      return tempImageFile;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
 
     try {
       final XFile? selectedImage = await picker.pickImage(source: source);
+      if (selectedImage == null) return;
 
-      if (selectedImage != null) {
-        File imageFile = File(selectedImage.path);
+      File imageFile = File(selectedImage.path);
+      File? compressedImage = await _compressImage(imageFile);
 
-        // Cargar la imagen
-        img.Image? originalImage = img.decodeImage(imageFile.readAsBytesSync());
-
-        if (originalImage != null) {
-          // Comprimir la imagen manteniendo las dimensiones originales
-          List<int> compressedImageBytes = img.encodeJpg(originalImage,
-              quality: 50); // Ajusta la calidad según sea necesario
-
-          // Crear un archivo temporal para la imagen procesada
-          final Directory tempDir = Directory.systemTemp;
-          final targetPath = '${tempDir.path}/temp.jpg';
-          imageFile = File(targetPath)..writeAsBytesSync(compressedImageBytes);
-
-          // Verificar el tamaño del archivo
-          if (imageFile.lengthSync() > 1048576) {
-            // Manejar error si el archivo todavía es demasiado grande
-            if (kDebugMode) {
-              print('El archivo es demasiado grande después de la compresión');
-            }
-            return;
-          }
-        }
-
+      if (compressedImage != null) {
         final String? imageUrl =
-            await StorageServices.uploadImageToGitHub(imageFile);
+            await StorageServices.uploadImageToGitHub(compressedImage);
 
         if (imageUrl != null) {
-          if (kDebugMode) {
-            print('Imagen cargada con éxito: $imageUrl');
-          }
           setState(() {
-            _image = imageFile;
-            _imagePath = imageUrl;
+            _image = compressedImage;
+            widget.onTap(imageUrl);
           });
-
-          widget.onTap(_imagePath);
-        } else {
-          if (kDebugMode) {
-            print('Error al cargar la imagen.');
-          }
-        }
+        } else {}
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error al seleccionar la imagen: $e');
-      }
+      if (kDebugMode) print(e);
     }
   }
 
@@ -127,7 +113,7 @@ class _ImageSelectorState extends State<ImageSelector> {
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(10),
         ),
-        child: _imagePath.isNotEmpty
+        child: widget.imagePath.isNotEmpty
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.file(

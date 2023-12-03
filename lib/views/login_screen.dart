@@ -17,8 +17,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String _imagePath = '';
+  late String _imagePath;
   bool showImageMessage = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _imagePath = '';
+  }
 
   bool _validateImage() {
     if (_imagePath.isEmpty) {

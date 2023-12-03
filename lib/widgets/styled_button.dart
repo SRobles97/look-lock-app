@@ -9,6 +9,7 @@ class StyledButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color color;
   final Color textColor;
+  final double fontSize;
 
   const StyledButton({
     Key? key,
@@ -18,6 +19,7 @@ class StyledButton extends StatelessWidget {
     required this.onPressed,
     this.color = ThemeHelper.primary,
     this.textColor = Colors.white,
+    this.fontSize = 18,
   }) : super(key: key);
 
   @override
@@ -39,6 +41,7 @@ class StyledButton extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
               color: textColor,
               fontFamily: GoogleFonts.firaSansCondensed().fontFamily,
+              fontSize: fontSize,
             ),
       ),
     );
