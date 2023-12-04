@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class ProjectedAlert {
   final int id;
   final String date;
@@ -6,16 +8,18 @@ class ProjectedAlert {
   ProjectedAlert({required this.id, required this.date, required this.time});
 
   factory ProjectedAlert.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate = DateTime.parse(json['timestamp']);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+    String formattedTime = DateFormat('HH:mm').format(parsedDate);
+
     return ProjectedAlert(
       id: json['id'],
-      date: json['date'],
-      time: json['time'],
+      date: formattedDate,
+      time: formattedTime,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'date': date,
-        'time': time,
-      };
+  static List<ProjectedAlert> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => ProjectedAlert.fromJson(json)).toList();
+  }
 }

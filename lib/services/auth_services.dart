@@ -1,16 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:look_lock_app/services/storage_services.dart';
+import 'package:look_lock_app/utils/http_utils.dart';
 
 class AuthServices {
-  final String ipAddress = dotenv.env['API_URL']!;
-
   Future<String> signUp(
       String email, String username, String password, String imageUrl) async {
-    final url = Uri.http(ipAddress, dotenv.env['REGISTER_URL']!);
+    final url = HttpUtils.getUri('REGISTER_URL');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -34,7 +31,7 @@ class AuthServices {
   }
 
   Future<String> signInWithPhoto(String imageUrl) async {
-    final url = Uri.http(ipAddress, dotenv.env['LOGIN_WITH_IMAGE_URL']!);
+    final url = HttpUtils.getUri('LOGIN_WITH_IMAGE_URL');
 
     final response = await http.post(
       url,

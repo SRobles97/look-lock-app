@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Alert {
   final int id;
   final String date;
@@ -11,18 +13,19 @@ class Alert {
       required this.imageTaken});
 
   factory Alert.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate = DateTime.parse(json['timestamp']);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+    String formattedTime = DateFormat('HH:mm').format(parsedDate);
+
     return Alert(
       id: json['id'],
-      date: json['date'],
-      time: json['time'],
-      imageTaken: json['image_taken'],
+      date: formattedDate,
+      time: formattedTime,
+      imageTaken: json['attempted_url'],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'date': date,
-        'time': time,
-        'image_taken': imageTaken,
-      };
+  static List<Alert> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => Alert.fromJson(json)).toList();
+  }
 }

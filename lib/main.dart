@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:look_lock_app/views/splash_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'utils/theme_helper.dart';
 
@@ -33,6 +34,7 @@ class LookLockApp extends StatelessWidget {
             background: ThemeHelper.background,
             primary: ThemeHelper.primary,
             secondary: ThemeHelper.secondary,
+            tertiary: ThemeHelper.tertiary,
           ),
           brightness: Brightness.light,
           primaryColor: ThemeHelper.primary,
@@ -86,7 +88,15 @@ class LookLockApp extends StatelessWidget {
           ),
         ),
         title: 'LookLock',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: const SplashScreen(),
+        supportedLocales: const [
+          Locale('es', 'CL'),
+        ],
       ),
     );
   }

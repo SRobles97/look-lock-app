@@ -16,42 +16,46 @@ class AlertCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              children: [
-                Text(
-                  'Fecha',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Text(title, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-            Column(
-              children: [
-                Text(
-                  'Hora',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-            StyledButton(
-              text: buttonText,
-              onPressed: () => buttonAction,
-              horizontalPadding: 20,
-              verticalPadding: 10,
-              fontSize: 12,
-            )
-          ],
+    return Center(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                children: [
+                  Text(
+                    'Fecha',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  Text(title, style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    'Hora',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+              StyledButton(
+                text: buttonText,
+                onPressed: () {
+                  buttonAction();
+                },
+                horizontalPadding: 20,
+                verticalPadding: 10,
+                fontSize: 12,
+              )
+            ],
+          ),
         ),
       ),
     );
