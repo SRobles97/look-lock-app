@@ -39,6 +39,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void filterByDateAndTimeRange() async {
+    if (_selectedDate.isNotEmpty &&
+        _selectedStartTime.isNotEmpty &&
+        _selectedEndTime.isNotEmpty) {
+      _displayedAlerts = AlertServices().fetchAlertsByDateAndTimeRange(
+          _selectedDate, _selectedStartTime, _selectedEndTime);
+    }
+  }
+
   void _search() {}
 
   void _logOut() async {
@@ -54,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _selectDate() async {
+  Future<String?> _selectDate() async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -64,38 +73,48 @@ class _HomeScreenState extends State<HomeScreen> {
     if (selectedDate != null) {
       String formattedDate =
           "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+      return formattedDate;
+    }
+    return null;
+  }
+
+  void _filterByDate() async {
+    String? selectedDate = await _selectDate();
+    if (selectedDate != null) {
       setState(() {
-        _selectedDate = formattedDate;
-        print(formattedDate);
+        _selectedDate = selectedDate;
         filterByDate();
       });
     }
   }
 
-  void _selectStartTime() async {
-    TimeOfDay? selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (selectedTime != null) {
-      String formattedTime = "${selectedTime.hour}:${selectedTime.minute}";
+  void _filterByDateAndTimeRange() async {
+    String? selectedDate = await _selectDate();
+    String? selectedStartTime = await _selectTime();
+    String? selectedEndTime = await _selectTime();
+    if (selectedDate != null &&
+        selectedStartTime != null &&
+        selectedEndTime != null) {
       setState(() {
-        _selectedStartTime = formattedTime;
+        _selectedDate = selectedDate;
+        _selectedStartTime = selectedStartTime;
+        _selectedEndTime = selectedEndTime;
+        filterByDateAndTimeRange();
       });
     }
   }
 
-  void _selectEndTime() async {
+  Future<String?> _selectTime() async {
     TimeOfDay? selectedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
     if (selectedTime != null) {
-      String formattedTime = "${selectedTime.hour}:${selectedTime.minute}";
-      setState(() {
-        _selectedEndTime = formattedTime;
-      });
+      String formattedTime =
+          "${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}";
+      return formattedTime;
     }
+    return null;
   }
 
   @override
@@ -133,9 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 5,
               ),
               _buildAlertsSection(),
-              const SizedBox(
-                height: 20,
-              ),
             ],
           ),
         ));
@@ -147,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
       children: <Widget>[
         StyledButton(
           text: 'Por fecha',
-          onPressed: () => _selectDate(),
+          onPressed: () => _filterByDate(),
           fontSize: 12,
           horizontalPadding: 40,
           verticalPadding: 10,
@@ -155,8 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
         StyledButton(
           text: 'Por hora',
           onPressed: () {
-            _selectStartTime();
-            _selectEndTime();
+            _filterByDateAndTimeRange();
           },
           fontSize: 12,
           horizontalPadding: 40,

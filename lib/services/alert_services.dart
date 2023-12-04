@@ -95,7 +95,40 @@ class AlertServices {
 
       if (HttpUtils.checkResponse(response)) {
         List<dynamic> jsonData = jsonDecode(response.body);
-        print(jsonData);
+        return ProjectedAlert.fromJsonList(jsonData);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al realizar la petición: $e');
+      }
+      return [];
+    }
+  }
+
+  Future<List<ProjectedAlert>> fetchAlertsByDateAndTimeRange(
+      String date, String start, String end) async {
+    String? accessToken = await HttpUtils.getUserToken();
+    if (accessToken == null) {
+      if (kDebugMode) {
+        print('Error: AccessToken es nulo');
+      }
+      return [];
+    }
+    final url = HttpUtils.getUriWithParam('GET_ATTEMPTS_BY_TIME_RANGE_URL',
+        'date/$date/from/${start.replaceFirst(':', '-')}/to/${end.replaceFirst(':', '-')}');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (HttpUtils.checkResponse(response)) {
+        List<dynamic> jsonData = jsonDecode(response.body);
         return ProjectedAlert.fromJsonList(jsonData);
       } else {
         return [];
