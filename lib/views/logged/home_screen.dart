@@ -110,8 +110,10 @@ class _HomeScreenState extends State<HomeScreen> {
       initialTime: TimeOfDay.now(),
     );
     if (selectedTime != null) {
-      String formattedTime =
-          "${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')}";
+      String formattedTime = "${selectedTime.hour.toString().padRight(
+            2,
+            '0',
+          )}:${selectedTime.minute.toString().padLeft(2, '0')}";
       return formattedTime;
     }
     return null;

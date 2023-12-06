@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          StyledButton(onPressed: _handleSubmit, text: 'Confirmar cuenta'),
+          StyledButton(onPressed: _handleSubmit, text: 'Iniciar sesión'),
           const SizedBox(height: 30),
         ],
       ),

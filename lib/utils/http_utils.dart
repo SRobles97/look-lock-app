@@ -30,10 +30,10 @@ class HttpUtils {
   }
 
   static Uri getUri(String endpoint) {
-    return Uri.http(_apiUrl, dotenv.env[endpoint]!);
+    return Uri.https(_apiUrl, dotenv.env[endpoint]!);
   }
 
   static Uri getUriWithParam(String endpoint, [String pathSuffix = '']) {
-    return Uri.http(_apiUrl, '${dotenv.env[endpoint]!}/$pathSuffix');
+    return Uri.https(_apiUrl, '${dotenv.env[endpoint]!}/$pathSuffix');
   }
 }
